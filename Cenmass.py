@@ -1,3 +1,11 @@
+# Changes by Gizis to SDR's code
+# change to use import numpy as np, import matplotlib as mpl
+# and matplotlib.pyplot as plt
+
+import numpy as np 
+import matplotlib as mpl
+import matplotlib.pyplot as plt
+
 '''
 Figure out total mass contained by Centaur population
 '''
@@ -12,16 +20,16 @@ cs2 = 257. # Stansberry et al. (2008)
 cs3 = 273. # Altenhoff et al. (2001)
 cs4 = 302. # Jewitt & Kalas (1998)
 cs5 = 236. # Groussin et al. (2004)
-Chariklo = kmcm * array([cs1, cs2, cs3, cs4, cs5])
+Chariklo = kmcm * np.array([cs1, cs2, cs3, cs4, cs5])
 
 # Orcus diameter (Fornasier et al. 2013, Brown et al. 2010)
-Orcus = kmcm * array([917., 900.])
+Orcus = kmcm * np.array([917., 900.])
 # Orcus density (g/cm^3, same sources)
-Odens = array([1.4, 1.53])
+Odens = np.array([1.4, 1.53])
 # Salacia diameter (Fornasier et al. 2013, Stansberry et al. 2012)
-Salacia = kmcm * array([854., 905.])
+Salacia = kmcm * np.array([854., 905.])
 # Salacia density
-Sdens = array([1.29, 1.16])
+Sdens = np.array([1.29, 1.16])
 
 # Threshold for separating 'large' from 'small' KBOs: large
 # are those that obey N(>R) propto R^(1-q), where q = 4.
@@ -59,9 +67,9 @@ def integrate_power(Rmax,dens):
     print 'N0_large', N0_large
 
     # Find the total mass contained in large bodies
-    quant = fourthirds * pi * dens
+    quant = fourthirds * np.pi * dens
     mlarge = lthresh**(q1-1.) * N0_large * quant * \
-             (log(Rmax)-log(lthresh))
+             (np.log(Rmax)-np.log(lthresh))
     print 'Large body mass', mlarge/Mpluto
 
     '''
@@ -113,14 +121,14 @@ def integrate_power(Rmax,dens):
     print 'Total mass', mtot/Mpluto
 
     # Get arrays to add to plot of N>(r) and then one of M<(r)
-    r = logspace(log10(minsize), log10(Rmax), num=500, endpoint=True)
-    ngr = zeros_like(r)
-    mlr = zeros_like(r)
-    r1 = where((r >= lthresh))
-    r2 = where((r < lthresh) & (r >= t2))
-    r3 = where((r < t2) & (r >= t3))
-    r4 = where((r < t3) & (r >= t4))
-    r5 = where((r < t4) & (r >= minsize))
+    r = np.logspace(np.log10(minsize), np.log10(Rmax), num=500, endpoint=True)
+    ngr = np.zeros_like(r)
+    mlr = np.zeros_like(r)
+    r1 = np.where((r >= lthresh))
+    r2 = np.where((r < lthresh) & (r >= t2))
+    r3 = np.where((r < t2) & (r >= t3))
+    r4 = np.where((r < t3) & (r >= t4))
+    r5 = np.where((r < t4) & (r >= minsize))
     ngr[(r1)] = N0_large/(q1-1.)*(r[(r1)]/lthresh)**(1.-q1)
     ngr[(r2)] = N0_med/(q2-1.)*(r[(r2)]/lthresh)**(1.-q2)
     ngr[(r3)] = N0_small/(q3-1.)*(r[(r3)]/t2)**(1.-q3)
@@ -135,7 +143,7 @@ def integrate_power(Rmax,dens):
     mlr[(r2)] = max(mlr[(r3)]) + (lthresh**(q2-1.)) * N0_med * quant * \
                 (r[(r2)]**(4.-q2) - t2**(4.-q2)) / (4.-q2)
     mlr[(r1)] = max(mlr[(r2)]) + (lthresh**(q1-1.)) * N0_large * quant * \
-                (log(r[(r1)]) - log(lthresh))
+                (np.log(r[(r1)]) - np.log(lthresh))
     print 'Sanity check total mass', max(mlr)/Mpluto
     r = r / kmcm
     
@@ -172,17 +180,17 @@ def mtot(detfrac):
     # Let's put Chariklo at its largest observed size -- what is the
     # total mass in Centaurs? Then minimum Chariklo size, then
     # maximum Orcus size (similar also to Salacia)
-    Crad = array([max(Orcus)/2., maxsize, max(Chariklo)/2., \
+    Crad = np.array([max(Orcus)/2., maxsize, max(Chariklo)/2., \
             min(Chariklo)/2.]) 
 
     # Density values: try max(Orcus), min(Salacia) -- little
     # geological alteration, plus 67P nucleus
-    dens = array([min(Sdens), max(Odens), 0.5])
+    dens = np.array([min(Sdens), max(Odens), 0.5])
 
     # Start the figure
     fig_size=(7,8.5)
     plt.rcParams["figure.figsize"] = fig_size
-    f, (ax1, ax2) = subplots(2, sharex=True)
+    f, (ax1, ax2) = plt.subplots(2, sharex=True)
     f.subplots_adjust(left=0.14,right=0.95,bottom=0.09,top=0.95, \
                       hspace=0.1)
     # Loop through all the max radius and density possibilities
@@ -197,7 +205,7 @@ def mtot(detfrac):
             mave = mtot / ngr[0]
             print 'Average mass', mave
             # Number of Centaurs > 1 km in size
-            g1km = where((r >= 1.0))
+            g1km = np.where((r >= 1.0))
             print 'Size threshold, N>:', r[(g1km[(0)][0])], \
                    ngr[(g1km[(0)][0])]
             if (j == 0):
@@ -229,26 +237,26 @@ def mtot(detfrac):
 
     # Another 2 figures, just to check proportion in medium size
     # bin and large bin:
-    figure()
-    testrad = where(r >= 10.)
+    plt.figure()
+    testrad = np.where(r >= 10.)
     ml10km = mlr[(testrad[(0)][0])]
     print 'm < 10 km', ml10km
     mlr = mlr - ml10km
-    loglog(r, mlr/Mpluto, 'k-')
-    xlim([10.,30.])
+    plt.loglog(r, mlr/Mpluto, 'k-')
+    plt.xlim([10.,30.])
     # ylim([0.1, 0.13])
-    xlabel('Radius')
-    ylabel('$M_<(R)$')
-    show()
+    plt.xlabel('Radius')
+    plt.ylabel('$M_<(R)$')
+    plt.show()
 
-    figure()
-    testrad = where(r >= 30.)
+    plt.figure()
+    testrad = np.where(r >= 30.)
     ml30km = mlr[(testrad[(0)][0])]
     print 'm < 30 km', ml30km
     mlr = mlr - ml30km
-    loglog(r, mlr/Mpluto, 'k-')
-    xlim([30.,300.])
+    plt.loglog(r, mlr/Mpluto, 'k-')
+    plt.xlim([30.,300.])
     # ylim([0.1, 0.13])
-    xlabel('Radius')
-    ylabel('$M_<(R)$')
-    show()
+    plt.xlabel('Radius')
+    plt.ylabel('$M_<(R)$')
+    plt.show()
