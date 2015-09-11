@@ -1,5 +1,4 @@
 
-#rishi tried to edit this code
 # Changes by Gizis to SDR's code
 # change to use import numpy as np, import matplotlib as mpl
 # and matplotlib.pyplot as plt
